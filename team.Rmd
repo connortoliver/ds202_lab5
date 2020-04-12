@@ -1,10 +1,54 @@
 ---
 title: "DS 202 Lab #5"
-author: "Connor Toliver; @connortoliver"
+author: "Connor Toliver, @connortoliver; Haley Humphries, @haley22"
 date: "4/11/2020"
 output: html_document
 ---
 
+## Lab 5: Accident Data
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+Before we get started with the analysis, let's first load in the `tidyverse` package and our data. We will be working with two dataframes: `acc` (accident data) and `pers` (person data).
+
+```{r}
+library(tidyverse)
+acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+pers <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv", stringsAsFactors = FALSE)
+```
+
+### Part 1: Accident Data
+
+\#1. Are there some days of the week where more accidents happen than on others? We can figure this out using `table`.
+
+```{r}
+table(acc$DAY_WEEK)
+```
+
+According to the [FARS Analytical User's Manual](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/812602), we know that a `DAY_WEEK` of 1 goes with Sunday, 2 goes with Monday, and so forth.
+
+This means that Saturday has more traffic accidents than any other day. Additionally, the entire weekend has more accidents than the week days—which isn't surprising at all.
+
+\#2. What time of the day do accidents happen?
+
+```{r}
+table(acc$HOUR)
+```
+
+Accidents appear to happen most from hours 17 through 21, or hours 5pm through 9pm. As most people are heading home from their evening commutes at this time, this could explain the accidents.
+
+However, 7-9am has a much lower number of accidents—which is when most people are headed to their commutes. Perhaps the accidents at night could be attributed to fatigue or intoxication.
+
+\#3. What is the number of accidents witth at least one drunk driver?
+
+```{r}
+acc %>% 
+  filter(DRUNK_DR >= 1) %>% 
+  summarize(n = n())
+```
+
+By filtering out the accidents with one or more drunk drivers and summarizing the number of entries, we see that there are 8,769 accidents involving at least one drunk driver.
+
+### Part 2: Connecting data
