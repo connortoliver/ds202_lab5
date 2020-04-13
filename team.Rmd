@@ -52,3 +52,46 @@ acc %>%
 By filtering out the accidents with one or more drunk drivers and summarizing the number of entries, we see that there are 8,769 accidents involving at least one drunk driver.
 
 ### Part 2: Connecting data
+
+\#4. In the person table, identify drivers (PER_TYP == 1, see FARS manual) and subset on them.
+
+```{r}
+pertyp <- pers %>% 
+  filter(PER_TYP == 1)
+
+pertyp
+```
+
+\#5. Join accident and person table (work out which variable(s) to use)
+
+```{r}
+joined <- full_join(acc, pers)
+joined
+```
+
+\#6. Tally the number of accidents by day of the week (DAY_WEEK), hour of the day (HOUR) and gender (SEX). Visualize the results.
+
+```{r}
+day_week <- table(joined$DAY_WEEK)
+barplot(day_week, main="Accidents per day of the week",
+   xlab="Number of Accidents")
+```
+
+```{r}
+hour <- table(joined$HOUR)
+barplot(hour, main="Accidents per hour",
+   xlab="Number of Accidents")
+```
+
+```{r}
+sex <- table(joined$SEX)
+barplot(sex, main="Accidents per sex",
+   xlab="Number of Accidents")
+```
+
+
+
+
+
+
+
