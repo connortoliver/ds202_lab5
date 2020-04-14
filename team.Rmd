@@ -59,14 +59,14 @@ By filtering out the accidents with one or more drunk drivers and summarizing th
 pertyp <- pers %>% 
   filter(PER_TYP == 1)
 
-pertyp
+head(pertyp)
 ```
 
 \#5. Join accident and person table (work out which variable(s) to use)
 
 ```{r}
 joined <- full_join(acc, pers)
-joined
+head(joined)
 ```
 
 \#6. Tally the number of accidents by day of the week (DAY_WEEK), hour of the day (HOUR) and gender (SEX). Visualize the results.
@@ -89,9 +89,63 @@ barplot(sex, main="Accidents per sex",
    xlab="Number of Accidents")
 ```
 
+\#7/8. Plot a choropleth map of accidents on a county level.
 
+First, let's load in the Geographic Locator Codes so we can join the map data later.
 
+```{r}
+glc <- readxl::read_xlsx('FRPP GLC - United StatesFeb132020.xlsx')
 
+glc <- glc %>% 
+   select('State Name', STATE = 'State Code', COUNTY = 'County Code', 'County Name') %>% 
+   unique()
+```
 
+We'll do some cleaning to ensure the joining will be painless.
 
+```{r}
+glc$STATE <- as.integer(glc$STATE)
+glc$COUNTY <- as.integer(glc$COUNTY)
+glc$`State Name` <- tolower(glc$`State Name`)
+glc$`County Name` <- tolower(glc$`County Name`)
+```
 
+First, we'll join the accident data `acc` with `glc`. 
+
+```{r}
+choro <- acc %>% 
+   select(STATE, ST_CASE, COUNTY) %>% 
+   group_by(STATE, COUNTY) %>% 
+   summarize(accidents = n()) %>% 
+   left_join(glc, by = c('STATE', 'COUNTY'))
+```
+
+Now let's load the map data.
+
+```{r}
+counties <- map_data('county')
+counties <- counties %>% 
+   mutate(`State Name` = region, `County Name` = subregion) %>% 
+   select(`State Name`, `County Name`, long, lat, group, order)
+```
+
+Finally, we will join all three together. We are doing a full join, since some counties do not appear in the accident data set.
+
+```{r}
+choro <- choro %>%
+   full_join(counties, by = c('State Name', 'County Name'))
+
+choro <- choro[order(choro$order), ]
+```
+
+Finally, we can plot the graph.
+
+```{r}
+ggplot(choro, aes(long, lat)) + 
+   geom_polygon(aes(group = group, fill = accidents)) +
+   xlab('Longitude') +
+   ylab('Latitude') +
+   ggtitle('Number of Accidents by County')
+```
+
+Most counties have less than 200 accidents. However, in some of the larger metropolitan areas, such as parts of Texas, Southern California, and Florida, the amount of accidents is higher. This is to be expected with a larger number of people.
