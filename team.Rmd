@@ -77,6 +77,7 @@ ggplot(joined, aes(DAY_WEEK))+
   geom_bar(stat="count", width=0.7, fill="steelblue")+
   theme_minimal()
 ```
+
 From this chart we can see that most accidents occur on weekends (Friday, Saturday, and Sunday) which makes a lot of sense considering those are the days that people are out more and also the days people are out drinking more often.
 
 ```{r}
@@ -85,6 +86,7 @@ ggplot(joined, aes(HOUR))+
   geom_bar(stat="count", width=0.5, fill="steelblue")+
   theme_minimal()
 ```
+
 It appears that most accidents happen from about 5pm-9pm, which is around dinner time and when people are heading home from work. When it's more towards 9pm, it could likely be alcohol related or even just from exhaustion.
 
 ```{r}
@@ -93,6 +95,7 @@ ggplot(joined, aes(SEX))+
   geom_bar(stat="count", width=0.7, fill="steelblue")+
   theme_minimal()
 ```
+
 We can see here that men are in approximately double the accidents that women are in. Upon doing some research to see why this is, I found that men tend to engage in riskier behavior while driving, men tend to speed more, and men, on average, drive more than women.
 
 \#7/8. Plot a choropleth map of accidents on a county level.
@@ -169,6 +172,7 @@ ggplot(data = choro, aes(x=long, y=lat)) +
   geom_point(data = joined %>% filter(MONTH %in% c(6,7,8)), aes(x=LONGITUD, y=LATITUDE), color = 'steelblue', alpha = .2, size = .02) +
   xlim(c(-130, -60)) + ylim(c(20, 50))
 ```
+
 It looks like there are overall more accidents in summer months that in winter months
 although they are definitely more scattered during the summer. In winter they are grouped together more, especially in northern parts of the country which makes me believe it could be weather related. It also appears that aside from California, the eastern portion of the United States has many more accidents than the western part, in both winter and summer.
 
